@@ -307,10 +307,17 @@
         /// </remarks>
         public async Task RunAsync(CancellationToken ct = default(CancellationToken))
         {
-            Listener.IgnoreWriteExceptions = true;
-            Listener.Start();
-
-            "Started HTTP Listener".Info(nameof(WebServer));
+            try
+            {
+                Listener.IgnoreWriteExceptions = true;
+                Listener.Start();
+                "Started HTTP Listener".Info(nameof(WebServer));
+            }
+            catch
+            {
+                "HTTP Listener could not be started. You may not be have enough privileges".Error(nameof(WebServer));
+                return;
+            }
 
             // Disposing the web server will close the listener.
             while (Listener != null && Listener.IsListening && !ct.IsCancellationRequested)
